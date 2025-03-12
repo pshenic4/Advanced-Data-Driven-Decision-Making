@@ -8,10 +8,10 @@ library(ggplot2)
 
 
 # clear the database
-rm(list=ls()) 
+rm(list=ls())
 
 # Reading the data
-url <- "https://raw.githubusercontent.com/pshenic4/Advanced-Data-Driven-Decision-Making/becf907b2c87751501daf026ad531a7767f38081/Case_Stud_%20I.csv"
+url <- "https://github.com/pshenic4/Advanced-Data-Driven-Decision-Making/blob/main/Case%20study%201/Case_Stud_%20I.csv"
 df <- read_csv(url)
 
 # Step 1
