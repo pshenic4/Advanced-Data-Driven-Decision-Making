@@ -1,0 +1,340 @@
+---
+title: "The Heliotronics Case"
+author: 'Team 2: Elena Pshenichnikova & Lina Simonian'
+date: "2025-03-13"
+output: html_document
+---
+
+```{r, include=FALSE}
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(broom)
+library(lm.beta)
+library(ggplot2)
+
+# clear the database
+rm(list=ls()) 
+
+# Reading the data
+url <- "https://raw.githubusercontent.com/pshenic4/Advanced-Data-Driven-Decision-Making/becf907b2c87751501daf026ad531a7767f38081/Case_Stud_%20I.csv"
+Data <- read_csv(url)
+Data
+```
+<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+## Question 1
+
+Use an electronic spreadsheet to plot the data displayed in the table and draw a scatter plot (point diagram).  
+
+Does the **multiplicative learning model** which assumes the following relationship:  
+
+\[
+Y = A X^b
+\]
+
+apply to this data set?  
+
+In our case **Y** are the average manufacturing cost of the last batch of 100 solar panels at Heliotronic in $ after having produced a cumulative production of **X** solar panels.  
+
+In the table **X** represents the column labeled **total number of solar panels produced** at Heliotronics.  
+
+**b** is the **experience parameter** not to be confused with the learning rate.  
+
+**A** is the price or **cost of the first unit**.  
+
+Obviously, \[ Y = A X^b \] is **not a linear relationship** of the type that regression analysis can model (**y = a + b₁x₁**).  
+
+So the question now is to **transform the data in order to get a linear relationship**.  
+
+Make an appropriate transformation of the data and redo the plot with the transformed data.
+</div>
+
+```{r}
+# Step 1
+## Plotting the data
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+ggplot(Data, aes(x = number_of_solar_panels, y = manufacturing_cost)) +
+  geom_point(color = 'blue') +
+  geom_smooth(color = 'black')+
+  labs(title = "Scatter Plot of Production vs. Manufacturing Cost", 
+       x = "Total Production (Solar Panels)", 
+       y = "Manufacturing Cost per Unit ($)") +
+  theme_minimal()
+```
+
+
+
+```{r}
+# Step 2
+## Logarithm transformation
+
+Data=Data %>% mutate(Log_number_of_solar_panels=log(number_of_solar_panels))
+Data=Data%>% mutate(Log_manufacturing_cost=log(manufacturing_cost))
+Data
+```
+
+```{r}
+# Step 3
+## Plotting transformed data
+ggplot(Data, aes(x = Log_number_of_solar_panels, y = Log_manufacturing_cost)) +
+  geom_point(color = 'red') +
+  geom_smooth(method = "lm", color = 'black', se = FALSE) +
+  labs(title = "Log-Log Scatter Plot of Production vs. Cost with Fitted Curve", 
+       x = "Log of Total Production", 
+       y = "Log of Manufacturing Cost") +
+  theme_minimal()
+```
+
+By taking the natural logarithm of both sides we converted the power-law function into a linear relationship. 
+
+<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+## Question 2
+
+Once you have answered the above questions, **conduct a linear regression with the transformed data**:  
+**Use R** to estimate the **regression model**.  
+
+Please **interpret the results of the regression analysis**!  How well does the model explain the data?  
+
+What is the **learning rate** that applies in this case?
+</div>
+
+```{r}
+# Fit the log-log regression model
+model <- with(Data, lm(Log_manufacturing_cost ~ Log_number_of_solar_panels))
+
+# Display the summary of the model
+summary(lm.beta(model))
+```
+
+This regression model estimates the relationship between **log-transformed manufacturing cost** and **log-transformed number of solar panels produced** to determine whether the **multiplicative learning model** applies.
+
+---
+
+#### **Model Equation**
+The estimated regression equation is:
+
+\[
+\log(\text{Manufacturing Cost}) = 7.8503 - 0.155 \times \log(\text{Number of Solar Panels})
+\]
+
+- **Intercept (7.8503)** → Represents **log(A)**, where **A** is the estimated cost of the **first solar panel**.  
+  - Taking the exponential:  
+    \[
+    A = e^{7.8503} \approx 2555.12 
+    \]
+    This suggests that **when one solar panel is produced, the estimated cost per unit is ~$2555.12**.
+
+- **Slope (-0.155)** → This is the **experience parameter (b_1)**.
+  - A **negative value** confirms that **costs decrease as production increases** (**economies of scale**).
+  - Specifically, for **every 1% increase in production**, the **manufacturing cost per unit decreases by 0.155%**.
+
+---
+
+#### **Model Fit: How Well Does the Model Explain the Data?**
+
+| Metric | Value | Interpretation |
+|---------|-------|----------------|
+| **Multiple R²** | **0.9502** | The model explains **95.02% of the variation** in manufacturing cost. |
+| **Adjusted R²** | **0.9477** | Very close to R², meaning the model is strong even after adjusting for complexity. |
+| **F-statistic** | **381.4** | Very high value, confirming the model is statistically significant. |
+| **p-value** | **1.701e-14 (< 0.001)** | The model is highly significant, meaning there is a strong relationship between production and cost. |
+| **Residual Standard Error** | **0.0299** | Small residual error, indicating accurate predictions. |
+
+ **Conclusion:**  
+- The model **fits the data  well**.
+- **95% of the cost variation** is explained by production volume.
+- The **negative slope confirms cost reduction with increased production**.
+
+---
+
+#### **Learning Rate (LR) Calculation**
+
+**Computing Log of Cost at \( X \)
+\[
+\log(Y_x) = b_0 + b_1 \cdot \log(X)
+\]
+```{r}
+#Step 1
+# Extract the maximum X (log scale)
+X_log <- max(Data$Log_number_of_solar_panels)  # Using max log-transformed production level
+
+# Compute log(Yx) using the regression model
+log_Yx <- 7.8503 + (-0.154991 * X_log)  # Using  log-transformed X 
+Yx <- exp(log_Yx)  # Convert back from log(Y) to actual cost
+```
+
+```{r, include=FALSE}
+# Print results
+cat("Production Level (Log_X):", X_log, "\n")
+cat("Manufacturing Cost at X accordingly to the model:", round(Yx, 2), "\n")
+```
+
+**Computing Log of Cost at \( 2X \) **
+\[
+\log(Y_2x) = b_0 + b_1 \cdot \log(2X)
+\]
+```{r}
+#Step 2
+# Define regression coefficients
+b0 <- 7.8503  # Intercept
+b1 <- -0.154991  # Slope
+
+# Compute log(Y2x) for doubled production (2X)
+X2_log <- X_log + log(2)  # Since log(2X) = log(X) + log(2)
+log_Y2x <- b0 + (b1 * X2_log)
+Y2x <- exp(log_Y2x)  # Convert back from log(Y) to actual cost
+```
+
+```{r, include=FALSE}
+# Print results
+cat("Doubled Production Level (Log_2X):", X2_log, "\n")
+cat("Manufacturing Cost at 2X accordingly to the model:", round(Y2x, 2), "\n")
+```
+
+**Computing Learning Rate (LR)**
+The learning rate formula is:
+\[
+LR = 1 - \frac{Y_{2X}}{Y_X}
+\]
+
+```{r}
+#Step 3
+# Compute Learning Rate (LR)
+learning_rate <- 1 - (Y2x / Yx)
+```
+
+```{r, include=FALSE}
+# Print learning rate
+cat("Estimated Learning Rate (LR):", round(learning_rate * 100, 2), "%\n")
+```
+
+📌 **Interpretation:**
+- Learning Rate (LR) = 10.19%
+- This means that when production doubles from 2200 to 4400 units, the manufacturing cost per unit decreases by 10.19%.
+
+<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+## **Question 3**
+
+Please **use the experience curve** estimate from the regression model to calculate the expected **average manufacturing cost per solar panel for the 400 solar panels** that would be produced for Switzerland.  
+
+**Hint**: estimate the average production cost per solar panel for **4700, 4800, 4900 and 5000 units and compute their mean**.
+</div>
+
+Predict Costs for 4700, 4800, 4900, and 5000 Units:
+```{r}
+#Step 1
+# Define production levels for prediction
+production_values <- c(4700, 4800, 4900, 5000)
+
+# Compute predicted log cost
+log_predicted_costs <- b0 + b1 * log(production_values)  # Natural log used
+
+# Convert back from log cost to actual cost ($)
+predicted_costs <- exp(log_predicted_costs)
+
+# Print predicted costs
+data.frame(number_of_solar_panels = production_values, manufacturing_cost = round(predicted_costs, 2))
+```
+
+- Calculate the expected average manufacturing cost per solar panel for the 400 solar panels:
+
+```{r}
+#Step 2
+# Compute the mean predicted cost
+avg_cost <- mean(predicted_costs)
+```
+
+```{r, include=FALSE}
+# Print final predicted bid
+cat("Average Manufacturing Cost per Solar Panel: $", round(avg_cost, 2), "\n")
+```
+
+<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+## **Question 4**
+
+Please **calculate a 95% confidence interval for the average manufacturing cost per solar panel** for the panels produced for Switzerland by using the lower and upper bounds of the confidence interval estimate for the experience parameter.  
+
+You should calculate **two extra regression equations** for both limits and then calculate the expected **average manufacturing cost per solar panel** for the **400 solar panels** that would be produced for Switzerland as in exercise 3.
+</div>
+
+Extracting 95% Confidence Interval for the Experience Parameter:
+```{r}
+#Step 1
+# Extract the 95% confidence interval for the slope (b1)
+conf_int <- confint(model)["Log_number_of_solar_panels", ]
+
+# Lower and Upper Bound for experience parameter (b1)
+b1_LB <- conf_int[1]  # Lower Bound
+b1_UB <- conf_int[2]  # Upper Bound
+```
+
+
+Apply Confidence Interval Bounds:
+```{r}
+#Step 2
+# Compute log costs using the confidence interval bounds (without repeating predictions)
+log_cost_LB <- log_predicted_costs + (b1_LB - b1) * log(production_values)  # Adjust for LB
+log_cost_UB <- log_predicted_costs + (b1_UB - b1) * log(production_values)  # Adjust for UB
+
+# Convert back to actual cost ($)
+cost_LB <- exp(log_cost_LB)
+cost_UB <- exp(log_cost_UB)
+
+# Store results in a data frame
+predicted_costs_CI <- data.frame(
+  number_of_solar_panels = production_values, 
+  manufacturing_cost_LB = round(cost_LB, 2),
+  manufacturing_cost_UB = round(cost_UB, 2)
+)
+
+# Display results
+predicted_costs_CI
+```
+
+Compute the Average Cost for LB and UB:
+```{r}
+#Step 3
+# Compute the mean predicted cost for LB and UB
+mean_cost_LB <- mean(cost_LB)
+mean_cost_UB <- mean(cost_UB)
+```
+
+```{r, include=FALSE}
+# Print final confidence interval results
+cat("95% Confidence Interval for Average Manufacturing Cost per Solar Panel:\n")
+cat("Lower Bound (LB): $", round(mean_cost_LB, 2), "\n")
+cat("Upper Bound (UB): $", round(mean_cost_UB, 2), "\n")
+```
+
+## **Conclusion: Estimating Productivity Gains for Heliotronics' Swiss Bid**
+
+Based on our **experience curve analysis**, we estimate the **expected manufacturing cost reduction** for Heliotronics as they scale production before producing **400 solar panels for the Swiss canton of Tessin**.
+
+### **Experience Curve Validation**  
+The **log-log transformation produced a linear relationship**, confirming that Heliotronics' **manufacturing cost reductions follow a power-law experience curve**.  
+The estimated **learning rate (~10.19%)** indicates that **cost per panel decreases by approximately 10% every time cumulative production doubles**.
+
+### **Cost Projection for Switzerland (400 Panels in April 2022)**  
+Heliotronics will have produced **2,400 additional solar panels before starting production for Switzerland**.  
+Using the **experience curve model**, we estimated the expected **average cost per solar panel** at that stage.  
+The **predicted cost was computed using cumulative production levels (4700–5000 panels)**, providing a **data-driven estimate for competitive bidding**.
+
+## **Conclusion: Estimating Cost & Bid Strategy for Switzerland**
+
+Our analysis confirms that **Heliotronics' manufacturing cost follows an experience curve**, with an estimated **learning rate of ~10.19%**. This means that **each time cumulative production doubles, per-unit costs decrease by approximately 10%**.
+
+### **Projected Cost for the Swiss Bid**
+**By the time Heliotronics produces the 400 solar panels for Switzerland, total production will have increased by 2,400 units.**  
+**Based on the experience curve model, the estimated manufacturing cost per panel falls within the following range:**  
+
+  **95% Confidence Interval for Cost per Solar Panel: [$598.54 - $792.72]**  
+
+### **Recommended Bid Strategy**
+ **A bid closer to $598.54 would maximize competitiveness**, making Heliotronics a strong contender in the Swiss market.  
+ **A bid near $792.72 provides a buffer against cost uncertainties**, ensuring sustainable profit margins.  
+ **Strategic Recommendation:** To balance **competitiveness and profitability**, **Heliotronics should place a bid between $598.54 and $792.72**, considering market conditions and pricing strategy.
+
+
+
+
