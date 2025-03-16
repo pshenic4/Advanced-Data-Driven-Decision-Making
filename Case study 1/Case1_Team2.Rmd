@@ -14,14 +14,18 @@ library(broom)
 library(lm.beta)
 library(ggplot2)
 
+#Readability in HTML report
+#install.packages("DT")
+library(DT)
+
 # clear the database
 rm(list=ls()) 
 
 # Reading the data
 url <- "https://raw.githubusercontent.com/pshenic4/Advanced-Data-Driven-Decision-Making/becf907b2c87751501daf026ad531a7767f38081/Case_Stud_%20I.csv"
 Data <- read_csv(url)
-Data
 ```
+
 <div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
 ## Question 1
 
@@ -71,7 +75,7 @@ ggplot(Data, aes(x = number_of_solar_panels, y = manufacturing_cost)) +
 
 Data=Data %>% mutate(Log_number_of_solar_panels=log(number_of_solar_panels))
 Data=Data%>% mutate(Log_manufacturing_cost=log(manufacturing_cost))
-Data
+datatable(Data, options = list(scrollX = TRUE))
 ```
 
 ```{r}
@@ -150,7 +154,7 @@ The estimated regression equation is:
 
 #### **Learning Rate (LR) Calculation**
 
-**Computing Log of Cost at \( X \)
+**Computing Log of Cost at** \( X \)
 \[
 \log(Y_x) = b_0 + b_1 \cdot \log(X)
 \]
@@ -164,7 +168,7 @@ log_Yx <- 7.8503 + (-0.154991 * X_log)  # Using  log-transformed X
 Yx <- exp(log_Yx)  # Convert back from log(Y) to actual cost
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 # Print results
 cat("Production Level (Log_X):", X_log, "\n")
 cat("Manufacturing Cost at X accordingly to the model:", round(Yx, 2), "\n")
@@ -186,7 +190,7 @@ log_Y2x <- b0 + (b1 * X2_log)
 Y2x <- exp(log_Y2x)  # Convert back from log(Y) to actual cost
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 # Print results
 cat("Doubled Production Level (Log_2X):", X2_log, "\n")
 cat("Manufacturing Cost at 2X accordingly to the model:", round(Y2x, 2), "\n")
@@ -204,12 +208,12 @@ LR = 1 - \frac{Y_{2X}}{Y_X}
 learning_rate <- 1 - (Y2x / Yx)
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 # Print learning rate
 cat("Estimated Learning Rate (LR):", round(learning_rate * 100, 2), "%\n")
 ```
 
-📌 **Interpretation:**
+**Interpretation:**
 - Learning Rate (LR) = 10.19%
 - This means that when production doubles from 2200 to 4400 units, the manufacturing cost per unit decreases by 10.19%.
 
@@ -234,7 +238,8 @@ log_predicted_costs <- b0 + b1 * log(production_values)  # Natural log used
 predicted_costs <- exp(log_predicted_costs)
 
 # Print predicted costs
-data.frame(number_of_solar_panels = production_values, manufacturing_cost = round(predicted_costs, 2))
+df <- data.frame(number_of_solar_panels = production_values, manufacturing_cost = round(predicted_costs, 2))
+datatable(df, options = list(scrollX = TRUE, pageLength = 5))
 ```
 
 - Calculate the expected average manufacturing cost per solar panel for the 400 solar panels:
@@ -245,7 +250,7 @@ data.frame(number_of_solar_panels = production_values, manufacturing_cost = roun
 avg_cost <- mean(predicted_costs)
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 # Print final predicted bid
 cat("Average Manufacturing Cost per Solar Panel: $", round(avg_cost, 2), "\n")
 ```
@@ -300,7 +305,7 @@ mean_cost_LB <- mean(cost_LB)
 mean_cost_UB <- mean(cost_UB)
 ```
 
-```{r, include=FALSE}
+```{r, echo = FALSE}
 # Print final confidence interval results
 cat("95% Confidence Interval for Average Manufacturing Cost per Solar Panel:\n")
 cat("Lower Bound (LB): $", round(mean_cost_LB, 2), "\n")
