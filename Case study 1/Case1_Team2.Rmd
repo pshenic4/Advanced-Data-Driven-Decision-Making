@@ -336,7 +336,7 @@ Our analysis confirms that **Heliotronics' manufacturing cost follows an experie
 **By the time Heliotronics produces the 400 solar panels for Switzerland, total production will have increased by 2,400 units.**  
 **Based on the experience curve model, the estimated manufacturing cost per panel falls within the following range:**  
 
-  **95% Confidence Interval for Cost per Solar Panel: [$598.54 - $792.72]**  
+  **95% Confidence Interval for Cost per Solar Panel: [$534.34 - $888.02]**  
 
 ### **Recommended Bid Strategy**
  **A bid closer to $534.33 would maximize competitiveness**, making Heliotronics a strong contender in the Swiss market.  
