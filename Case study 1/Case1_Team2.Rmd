@@ -26,7 +26,7 @@ url <- "https://raw.githubusercontent.com/pshenic4/Advanced-Data-Driven-Decision
 Data <- read_csv(url)
 ```
 
-<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+<div style="border: 5px solid #007acc; padding: 10px; border-radius: 10px;">
 ## Question 1
 
 Use an electronic spreadsheet to plot the data displayed in the table and draw a scatter plot (point diagram).  
@@ -92,7 +92,7 @@ ggplot(Data, aes(x = Log_number_of_solar_panels, y = Log_manufacturing_cost)) +
 
 By taking the natural logarithm of both sides we converted the power-law function into a linear relationship. 
 
-<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+<div style="border: 5px solid #007acc; padding: 10px; border-radius: 10px;">
 ## Question 2
 
 Once you have answered the above questions, **conduct a linear regression with the transformed data**:  
@@ -217,7 +217,7 @@ cat("Estimated Learning Rate (LR):", round(learning_rate * 100, 2), "%\n")
 - Learning Rate (LR) = 10.19%
 - This means that when production doubles from 2200 to 4400 units, the manufacturing cost per unit decreases by 10.19%.
 
-<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+<div style="border: 5px solid #007acc; padding: 10px; border-radius: 10px;">
 ## **Question 3**
 
 Please **use the experience curve** estimate from the regression model to calculate the expected **average manufacturing cost per solar panel for the 400 solar panels** that would be produced for Switzerland.  
@@ -255,7 +255,7 @@ avg_cost <- mean(predicted_costs)
 cat("Average Manufacturing Cost per Solar Panel: $", round(avg_cost, 2), "\n")
 ```
 
-<div style="border: 2px solid #007acc; padding: 10px; border-radius: 5px;">
+<div style="border: 5px solid #007acc; padding: 10px; border-radius: 10px;">
 ## **Question 4**
 
 Please **calculate a 95% confidence interval for the average manufacturing cost per solar panel** for the panels produced for Switzerland by using the lower and upper bounds of the confidence interval estimate for the experience parameter.  
