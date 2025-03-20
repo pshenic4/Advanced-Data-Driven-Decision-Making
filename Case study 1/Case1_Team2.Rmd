@@ -267,11 +267,14 @@ Extracting 95% Confidence Interval for the Experience Parameter:
 ```{r}
 #Step 1
 # Extract the 95% confidence interval for the slope (b1)
-conf_int <- confint(model)["Log_number_of_solar_panels", ]
+conf_int <- confint(model)
 
 # Lower and Upper Bound for experience parameter (b1)
-b1_LB <- conf_int[1]  # Lower Bound
-b1_UB <- conf_int[2]  # Upper Bound
+
+b0_LB <- conf_int[1, 1]
+b0_UB <- conf_int[1, 2]
+b1_LB <- conf_int[2, 1]
+b1_UB <- conf_int[2, 2]
 ```
 
 
@@ -279,8 +282,8 @@ Apply Confidence Interval Bounds:
 ```{r}
 #Step 2
 # Compute log costs using the confidence interval bounds (without repeating predictions)
-log_cost_LB <- log_predicted_costs + (b1_LB - b1) * log(production_values)  # Adjust for LB
-log_cost_UB <- log_predicted_costs + (b1_UB - b1) * log(production_values)  # Adjust for UB
+log_cost_LB <-  b0_LB + b1_LB * log(production_values)
+log_cost_UB <- b0_UB + b1_UB * log(production_values)
 
 # Convert back to actual cost ($)
 cost_LB <- exp(log_cost_LB)
@@ -336,9 +339,9 @@ Our analysis confirms that **Heliotronics' manufacturing cost follows an experie
   **95% Confidence Interval for Cost per Solar Panel: [$598.54 - $792.72]**  
 
 ### **Recommended Bid Strategy**
- **A bid closer to $598.54 would maximize competitiveness**, making Heliotronics a strong contender in the Swiss market.  
- **A bid near $792.72 provides a buffer against cost uncertainties**, ensuring sustainable profit margins.  
- **Strategic Recommendation:** To balance **competitiveness and profitability**, **Heliotronics should place a bid between $598.54 and $792.72**, considering market conditions and pricing strategy.
+ **A bid closer to $534.33 would maximize competitiveness**, making Heliotronics a strong contender in the Swiss market.  
+ **A bid near $888.02 provides a buffer against cost uncertainties**, ensuring sustainable profit margins.  
+ **Strategic Recommendation:** To balance **competitiveness and profitability**, **Heliotronics should place a bid between $534.33 and $888.02**, considering market conditions and pricing strategy.
 
 
 
