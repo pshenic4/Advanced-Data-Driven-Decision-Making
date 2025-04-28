@@ -1,0 +1,46 @@
+Variable,Label
+Im1, What do GLB represent from your point of view?  Large Assortment
+Im2, What do GLB represent from your point of view?  Assortment Variety
+Im3, What do GLB represent from your point of view?  Artistic Decoration of Sales Area
+Im4, What do GLB represent from your point of view?  Creative Decoration of Sales Area
+Im5, What do GLB represent from your point of view?  Appealing Arrangement of Shop Windows
+Im6, What do GLB represent from your point of view?  France
+Im7, What do GLB represent from your point of view?  French Savoir-vivre
+Im8, What do GLB represent from your point of view?  Expertise in French Traditional Cuisine
+Im9, What do GLB represent from your point of view?  French Fashion
+Im10, What do GLB represent from your point of view?  Gourmet Food
+Im11, What do GLB represent from your point of view?  High-quality Cosmetics
+Im12, What do GLB represent from your point of view?  Luxury brands
+Im13, What do GLB represent from your point of view?  Up tp date Designer Brands
+Im14, What do GLB represent from your point of view?  Gourmet specialities
+Im15, What do GLB represent from your point of view?  Professional Selection of Brands
+Im16, What do GLB represent from your point of view?  Professional Appearance Towards Customers
+Im17, What do GLB represent from your point of view?  Are Trendy
+Im18, What do GLB represent from your point of view?  Are Hip
+Im19, What do GLB represent from your point of view?  Professional Organization
+Im20, What do GLB represent from your point of view?  Relaxing Shopping
+Im21, What do GLB represent from your point of view?  A Great Place to Stroll
+Im22, What do GLB represent from your point of view?  Intimate Shop Atmosphere
+C_CR1,C_COCRE1 -CO-CREATION -I would like to participate in an expert-workshop to improve the assortment of Galeries Lafayette Berlin.
+C_CR2,C_COCRE2 -CO-CREATION -I would be available to take part in another survey at Galeries Lafayette Berlin.
+C_CR3,C_COCRE3 -CO-CREATION -I would like to become a member of a customer group whose opinion is obtained for new products and major changes.
+C_CR4,"C_COCRE4 -CO-CREATION -I would like to participate in planning and designing special events (e.g. fashion show, introduction of new car models) if asked."
+C_REP1,C_REP1  -REPURCHASE - I will continue to be a loyal customer of Galeries Lafayette Berlin.
+C_REP2,C_REP2  -REPURCHASE - I intend to shop at Galeries Lafayette Berlin in the future.
+C_REP3,C_REP3  -REPURCAHSE -  I will surely visit Galeries Lafayette Berlin in the future.
+COM_A1,COM_A1 - AFFECTIVE COMMITMENT -How strongly are you attached to Galeries Lafayette Berlin?
+COM_A2,COM_A2 -AFFECTIVE COMMITMENT -How strongly are you emotionally connected to Galeries Lafayette Berlin?
+COM_A3,COM_A3 -AFFECTIVE COMMITMENT -As a customer I feel (close) attached to GL
+COM_A4,COM_A4 -AFFECTIVE COMMITMENT -feel a strong emotional bond toward GLB
+SAT_1,SAT_1  -SATISFACTION - I am very satisfied with Galeries Lafayette Berlin.
+SAT_2,"SAT_2  -SATISFACTION -   Overall, I am very satisfied with Galeries Lafayette Berlin."
+SAT_3,SAT_3   -SATISFACTION - How satisfied are you with Galeries Lafayette Berlin?
+SAT_P1,SAT_P1 -SATISFACTION EMPLOYEES - The employees are capable and professional.
+SAT_P2,SAT_P2  -SATISFACTION EMPLOYEES - The employees know best about their products.
+SAT_P3,SAT_P3  -SATISFACTION EMPLOYEES - The employees are well-informed.
+SAT_P4,SAT_P4  -SATISFACTION EMPLOYEES - The employees are always helpful.
+SAT_P5,SAT_P5  -SATISFACTION EMPLOYEES - The employees are willing to respond to my questions in detail.
+SAT_P6,SAT_P6  -SATISFACTION EMPLOYEES - The employees are friendly.
+TRU_1,TRUS_1  -TRUST - I have the feeling that I can completely rely on GL.
+TRU_2,TRUS_2  -TRUST -  GLB will always be honest and trustful with me.
+TRU_3,TRUS_3  -TRUST - GL will treat me always fair as a customer
