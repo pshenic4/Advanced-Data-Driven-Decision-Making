@@ -155,7 +155,7 @@ ggcorrplot(round(cor_matrix_Images, 2),
            lab = TRUE, lab_col = "black", hc.order = T, lab_size = 2)
 ```
 
-Most values are sufficient for FA, although Im11 has weaker correlations.
+Most values are sufficient for FA, although some as Im11, Im9 have weaker correlations.
 
 ------------------------------------------------------------------------
 
@@ -215,7 +215,7 @@ ggplot(Total_Variance_Explained_paf_1, aes(x = Factor_n, y = EigenValue, group =
   labs( title = "Scree Plot") +
   geom_hline(yintercept= 1, linetype="dashed", color = "red")
 ```
-On the Scree-plot the elbow seems to be at 6th or 7th factors level.
+On the Scree-plot the elbow seems to be at 6th or 7th factors level, 8 factor is also worth exploring.
 
 To find out the right number of factors 3 possible solution with 6,7 and 8 factors shall be further explored with CFA.
 
@@ -248,12 +248,13 @@ sort(paf_6$communality)
 **Variance Explained:** Explains 68.0% of the total variance. 
 
 **Factor Loadings:**  
-* Im9 (French Fashion): Loads weakly on MR2 (0.440) and also on MR5 (0.321) and MR6 (0.325) - very complex.
-* Im11 (High-quality Cosmetics): Loads weakly on MR2 (0.550)
-* Im16 (Professional Appearance Towards Customers): Loads on MR1 (0.467) and MR4 (0.364).
-* Im17 (Are Trendy): Loads weakly/complexly on MR1 (0.379), MR4 (0.303), MR5 (0.360), and MR6 (0.479).
-* Im18 (Are Hip): Loads weakly/complexly on MR1 (0.303), MR4 (0.306), MR5 (0.305), and MR6 (0.472).
-* Im19 (Professional Organization): Loads on MR1 (0.449) and MR4 (0.405).
+
+	• Im9 (French Fashion): Loads weakly on MR2 (0.440) and also on MR5 (0.321) and MR6 (0.325) - very complex.
+	• Im11 (High-quality Cosmetics): Loads weakly on MR2 (0.550)
+	• Im16 (Professional Appearance Towards Customers): Loads on MR1 (0.467) and MR4 (0.364).
+	• Im17 (Are Trendy): Loads weakly/complexly on MR1 (0.379), MR4 (0.303), MR5 (0.360), and MR6 (0.479).
+	• Im18 (Are Hip): Loads weakly/complexly on MR1 (0.303), MR4 (0.306), MR5 (0.305), and MR6 (0.472).
+	• Im19 (Professional Organization): Loads on MR1 (0.449) and MR4 (0.405).
 
 **Communalities:** Similar low communalities persist for Im11 (0.40), Im16 (0.45), Im9 (0.46), Im19 (0.51). Im18 (0.56) also has a low communality here. This indicates the 6 factors do a poor job explaining the variance in these items.
 
@@ -293,57 +294,6 @@ summary(fit_6,
         fit.measures = TRUE, 
         standardized = TRUE)
 ```
-
-**P-value (Chi-square):** 0, which shows that the model *doesn't fit good* (in this case we look for p > 0.05, non-significant = good)
-
-**CFI:**  0.87, which is *less than acceptable* ( >  0.90 - acceptable,  >  0.95 - excellent)
-
-**TLI:** 0.84, also *not acceptable* ( >  0.90 - acceptable,  >  0.95 - excellent)
-
-**RMSEA:** 0.1 means *poor fit* (< 0.08 - acceptable, < 0.06 - excellent)
-
-**Latent Variables (Std.all):** Several loadings are weak, reflecting the poor fit and EFA structure.
-* Im6 (0.53) is low. Im7 (0.64) is marginal. Forcing diverse items onto one factor strains the loadings.
-* Im16 (0.58), Im19 (0.59) are low, again showing the problem of placing these items here.
-* Im11 (0.61) is lowish.
-
-**Conclusion:**  Metrics are unacceptable - this model should not be considered.
-
-------------------------------------------------------------------------
-
-```{r}
-#Modification Indices
-modificationindices(fit_6) %>% filter(mi>100)
-```
-
-The large MI values (>100) suggest that allowing these item pairs’ residuals to correlate would significantly improve model fit. These correlations are theoretically justifiable:
-* Im1 and Im2 (Assortment) are conceptually very close.
-* Im10 and Im14 (Food) measure related perceptions.
-* Im6 and Im7 (France) reflect closely linked experiences.
-
-**To see how the 6 Factors model can be improved the correlations were added to improve fit:**
-
-```{r}
-model_6_cov <- "France =~ Im6 + Im7 + Im8 + Im10 + Im14
-          Assortment =~ Im1 + Im2 + Im15 + Im16 + Im19
-          Aesthetic =~ Im3 + Im4 + Im5
-          Quality =~ Im11 + Im12 + Im13
-          Atmosphere =~ Im20 + Im21 + Im22
-          Trends =~ Im17 + Im18
-          # Add residual covariances based on Modification Indices
-Im6 ~~ Im7
-Im1 ~~ Im2
-Im10 ~~ Im14
-"
-
-fit_6_cov <- cfa(model_6_cov, 
-         data = Images, 
-         missing = "ML") 
-
-summary(fit_6_cov, 
-        fit.measures = TRUE, 
-        standardized = TRUE)
-```
 ```{r}
 #calculating cronbach alpha
 CronFrance <- cronbach(subset(Images, select = c(Im6, Im7, Im8, Im10, Im14)))
@@ -365,109 +315,23 @@ CronTrends <- cronbach(subset(Images, select = c(Im17, Im18)))
 CronTrends
 ```
 
-This adjustment led to a substantial improvement in model fit:
+**P-value (Chi-square):** 0, which shows that the model *doesn't fit good* (in this case we look for p > 0.05, non-significant = good)
 
-**CFI** = 0.97 excellent 
+**CFI:**  0.87, which is *less than acceptable* ( >  0.90 - acceptable,  >  0.95 - excellent)
 
-**TLI** = 0.96 excellent
+**TLI:** 0.84, also *not acceptable* ( >  0.90 - acceptable,  >  0.95 - excellent)
 
-**RMSEA** = 0.054 almost excellent
+**RMSEA:** 0.1 means *poor fit* (< 0.08 - acceptable, < 0.06 - excellent)
 
-**Latent Variables (Std.all)**:
-* Im6 (0.62)  is still low.
-* Im16 (0.67) - marginal.
-* Im11 (0.61) is lowish.
-	
+**Latent Variables (Std.all):** Several loadings are weak, reflecting the poor fit and EFA structure.
+
+	• Im6 (0.53) is low. Im7 (0.64) is marginal. Forcing diverse items onto one factor strains the loadings.
+	• Im16 (0.58), Im19 (0.59) are low, again showing the problem of placing these items here.
+	• Im11 (0.61) is lowish.
+
 **Cronbach alphas** are good or excellent.
 
-
-```{r}
-#Local Fit
-std.loadings <- inspect(fit_6_cov, what="std")$lambda
-check <- std.loadings
-check[check>0] <- 1
-
-std.loadings[std.loadings==0] <- NA
-std.loadings2 <- std.loadings^2
-std.theta<- inspect(fit_6_cov, what="std")$theta
-
-
-#Individual item Reliability
-IIR <- std.loadings2/(colSums(std.theta)+std.loadings2)
-IIR
-
-
-#Composite/Construct Reliability
-sum.std.loadings<-colSums(std.loadings, na.rm=TRUE)^2
-sum.std.theta<-rowSums(std.theta)
-sum.std.theta=check*sum.std.theta
-CR=sum.std.loadings/(sum.std.loadings+colSums(sum.std.theta))
-CR
-
-#Average Variance Extracted 
-std.loadings <- inspect(fit_6_cov, what="std")$lambda
-std.loadings <- std.loadings^2
-AVE=colSums(std.loadings)/(colSums(sum.std.theta)+colSums(std.loadings))
-AVE
-
-
-std_fit1 <- inspect(fit_6_cov, "std")
-std_fit1$psi^2
-```
-
-
-**Interpretation of the Reliability and Validity Analysis for 6-Factor Model (with Correlated Errors):**
-
-This section details the reliability and validity assessment for the 6-factor Confirmatory Factor Analysis (CFA) model, which included residual covariances between Im6-Im7 and Im1-Im2 residual covariance.
-
-**Individual Item Reliability (IIR)**
-
-IIR represents the proportion of variance in each observed indicator explained by its corresponding latent factor (effectively the squared standardized loading).
-
-*   **High Values (Good):** Items showing strong reliability (typically > 0.70), indicating they are well-explained by their respective factors, include: Im4 (0.94), Im17 (0.95), Im3 (0.88), Im8 (0.80), Im12 (0.76), Im13 (0.73), Im22 (0.76), Im20 (0.72), Im18 (0.73).
-*   **Moderate Values:** Items with moderate reliability include: Im15 (0.67), Im16 (0.54), Im19 (0.58), Im5 (0.58), Im21 (0.62).
-*   **Low Values (Problematic):** Several items exhibit low reliability, suggesting they are not strongly representative of their assigned factors in this model configuration:
-    *   Items for the **France** factor: `Im6` (0.24), `Im7` (0.35), `Im10` (0.32), `Im14` (0.33).
-    *   Items for the **Assortment** factor: `Im1` (0.28), `Im2` (0.25).
-    *   Item `Im11` (0.37) for the **Quality** factor.
-    Much of the variance in these low-reliability items remains unexplained by their factors within this model.
-
-**Composite Reliability (CR)**
-
-CR assesses the internal consistency of the indicators for each latent construct. A value > 0.70 is generally considered acceptable.
-
-*   **Acceptable/Marginal:**
-    *   **France (0.75):** Meets the minimum threshold, but this value should be viewed cautiously given the very low IIR of its individual indicators.
-    *   **Assortment (0.78):** Appears acceptable, however, this also masks the poor reliability of items Im1 and Im2 within the factor.
-*   **Good/Excellent:**
-    *   **Aesthetic (0.92), Quality (0.83), Atmosphere (0.87), Trends (0.91):** These factors demonstrate good to excellent internal consistency, suggesting their indicators work well together.
-
-**Average Variance Extracted (AVE)**
-
-AVE measures the average amount of variance explained by the latent factor across its indicators, indicating convergent validity. An AVE > 0.50 is generally required.
-
-*   **FAIL:**
-    *   **France (0.37):** Fails to meet the threshold.
-    *   **Assortment (0.42):** Fails to meet the threshold.
-    For both factors, the average indicator variance explained by the construct is less than the variance due to error/uniqueness, indicating **poor convergent validity**.
-*   **PASS:**
-    *   **Aesthetic (0.80), Quality (0.62), Atmosphere (0.70), Trends (0.84):** These factors meet or exceed the 0.50 criterion, demonstrating acceptable to excellent convergent validity.
-
-**Discriminant Validity (via Fornell-Larcker Criterion)**
-
-Discriminant validity assesses whether latent factors represent truly distinct concepts. Using the Fornell-Larcker criterion, the AVE of a factor should be greater than its squared correlation (shared variance) with any other factor.
-
-*   **France (AVE=0.37):** Appears distinct from other factors based on this criterion (all squared correlations with France are below 0.37).
-*   **Assortment (AVE=0.42):**
-    *   vs. Aesthetic: Squared correlation = 0.43. Since 0.43 > 0.42, this comparison **FAILS**.
-    *   vs. Quality: Squared correlation = 0.40. Since 0.40 < 0.42, this comparison **PASSES**.
-    *   vs. Trends: Squared correlation = 0.46. Since 0.46 > 0.42, this comparison **FAILS**.
-    The Assortment factor **lacks discriminant validity** against the Aesthetic and Trends factors within this model.
-*   **Other Factors:** Aesthetic (AVE=0.80), Quality (AVE=0.62), Atmosphere (AVE=0.70), and Trends (AVE=0.84) all demonstrate adequate discriminant validity amongst themselves and against France, as their AVE values are greater than their respective squared correlations with other factors.
-
-**Conclusion on Modified 6-Factor Model Reliability & Validity**
-
-While modifying the 6-factor model by adding specific residual covariances (`Im6~~Im7`, `Im1~~Im2`) may improve overall fit indices compared to the basic 6-factor model, this detailed assessment reveals **persistent and fundamental weaknesses**. The **France** and **Assortment** factors suffer from poor item reliability (low IIR) for multiple indicators and **fail to achieve adequate convergent validity (AVE < 0.50)**. Furthermore, the **Assortment** factor demonstrates **poor discriminant validity** against Aesthetic and Trends. These results strongly indicate that the 6-factor structure, even when adjusted, does not provide a reliable or valid representation of the underlying constructs, particularly for France and Assortment. This analysis reinforces the decision to explore alternative structures, such as the **7-factor model**.
+**Conclusion:**  Metrics are unacceptable - this model should not be considered.
 
 ------------------------------------------------------------------------
 
@@ -496,10 +360,11 @@ sort(paf_7$communality)
 **Variance Explained:** Explains 71.9% of the total variance. This is generally considered a good amount.
 
 **Loadings:** The structure looks mostly clear, but there are several potentially problematic items:
-* Im8 (Expertise in French Traditional Cuisine): Loads on MR2 (0.554) and MR7 (0.532) - Clear cross-loading.
-* Im9 (French Fashion): Loads primarily on MR2 (0.464) but also weakly on MR5 (0.325).
-* Im16 (Professional Appearance Towards Customers): Loads on MR1 (0.435) and MR4 (0.345) - Clear cross-loading, and both loadings are relatively low.
-* Im19 (Professional Organization): Loads on MR1 (0.414) and MR4 (0.384) - Clear cross-loading, relatively low loadings.
+
+	• Im8 (Expertise in French Traditional Cuisine): Loads on MR2 (0.554) and MR7 (0.532) - Clear cross-loading.
+	• Im9 (French Fashion): Loads primarily on MR2 (0.464) but also weakly on MR5 (0.325).
+	• Im16 (Professional Appearance Towards Customers): Loads on MR1 (0.435) and MR4 (0.345) - Clear cross-loading, and both loadings are relatively low.
+	• Im19 (Professional Organization): Loads on MR1 (0.414) and MR4 (0.384) - Clear cross-loading, relatively low loadings.
 
 **Communalities:** Im11 (0.40), Im9 (0.45), Im16 (0.45), Im19 (0.51) have the lowest communalities, meaning the 7 factors capture less of their variance. Values below 0.5 are often flagged.
 
@@ -544,6 +409,14 @@ summary(fit_7,
         standardized = TRUE)
 
 ```
+```{r }
+#calculating cronbach alpha
+CronFrance <- cronbach(subset(Images, select = c(Im6, Im7)))
+CronFrance
+
+CronFood <- cronbach(subset(Images, select = c(Im10, Im14)))
+CronFood
+```
 
 **P-value (Chi-square):** still 0, which shows that the model *doesn't fit good* (in this case we look for p > 0.05, non-significant = good), but at the same time Chi-square is sensitive to big datasets and not always reliable.
 	
@@ -551,12 +424,15 @@ summary(fit_7,
 
 **TLI:** 0.90,  *acceptable* ( >  0.90 - acceptable,  >  0.95 - excellent)
 
-**RMSEA:** 0.084 is still *poor*.
+**RMSEA:** 0.084 is better but still *poor*.
 
 **Latent Variables: (Std.all):**
-* Im16 on Assortment: 0.58 (Low)
-* Im19 on Assortment: 0.59 (Low)
-* Im11 on Quality: 0.61 (Lowish)
+
+	• Im16 on Assortment: 0.58 (Low)
+	• Im19 on Assortment: 0.59 (Low)
+	• Im11 on Quality: 0.61 (Lowish)
+
+**Cronbach’s Alpha** Results are good or excellent. 
 	
 
 **Removing Im8 and Im9 improved the France factor indicators but did not resolve the fundamental issues with the 7-factor structure.**
@@ -569,72 +445,15 @@ summary(fit_7,
 ------------------------------------------------------------------------
 
 ```{r }
-modificationindices(fit_7) %>% filter(mi>100)
-```
-
-**To see how the 7 Factors model can be improved the correlations were added:**
-* Im1 ~~ Im2
-* Im16 ~~ Im19
-
-```{r }
-model_7_cov <- "France =~ Im6 + Im7           
-          Assortment =~ Im1 + Im2 + Im15 + Im16 + Im19
-          Aesthetic =~ Im3 + Im4 + Im5
-          Quality =~ Im11 + Im12 + Im13
-          Atmosphere =~ Im20 + Im21 + Im22
-          Trends =~ Im17 + Im18
-          Food =~ Im10 + Im14
-
-# Add residual covariances based on Modification Indices
-Im1 ~~ Im2
-Im16 ~~ Im19
-"
-
-fit_7_cov <- cfa(model_7_cov, 
-         data = Images, 
-         missing = "ML")
-
-summary(fit_7_cov, 
-        fit.measures = TRUE, 
-        standardized = TRUE)
-```
-
-
-```{r }
-#calculating cronbach alpha
-CronFrance <- cronbach(subset(Images, select = c(Im6, Im7)))
-CronFrance
-
-CronFood <- cronbach(subset(Images, select = c(Im10, Im14)))
-CronFood
-```
-
-This adjustment led to a substantial improvement in model fit:
-
-**CFI** = 0.98 excellent 
-
-**TLI** = 0.97 excellent
-
-**RMSEA** = 0.48 excellent
-
-**Latent Variables (Std.all)** show good except:
-* Im11 (0.61) is lowish.
-
-**Cronbach’s Alpha** Results are good or excellent. 
-
-------------------------------------------------------------------------
-
-
-```{r }
 
 #Local Fit
-std.loadings <- inspect(fit_7_cov, what="std")$lambda
+std.loadings <- inspect(fit_7, what="std")$lambda
 check <- std.loadings
 check[check>0] <- 1
 
 std.loadings[std.loadings==0] <- NA
 std.loadings2 <- std.loadings^2
-std.theta<- inspect(fit_7_cov, what="std")$theta
+std.theta<- inspect(fit_7, what="std")$theta
 
 #Individual item Reliability
 IIR <- std.loadings2/(colSums(std.theta)+std.loadings2)
@@ -648,67 +467,68 @@ CR=sum.std.loadings/(sum.std.loadings+colSums(sum.std.theta))
 CR
 
 #Average Variance Extracted 
-std.loadings <- inspect(fit_7_cov, what="std")$lambda
+std.loadings <- inspect(fit_7, what="std")$lambda
 std.loadings <- std.loadings^2
 AVE=colSums(std.loadings)/(colSums(sum.std.theta)+colSums(std.loadings))
 AVE
 
 
-std_fit1 <- inspect(fit_7_cov, "std")
+std_fit1 <- inspect(fit_7, "std")
 std_fit1$psi^2
 ```
-**Interpretation of the Reliability and Validity Analysis for 7-Factor Model (with Correlated Errors)**
+**Interpretation of the Reliability and Validity Analysis for 7-Factor Model**
 
-This section details the reliability and validity assessment for the 7-factor Confirmatory Factor Analysis (CFA) model (`fit_7_cov`). This model excludes indicators Im8 and Im9 (originally associated with France) and includes residual covariances between Im1-Im2 and Im16-Im19.
+This section details the reliability and validity assessment for the 7-factor Confirmatory Factor Analysis (CFA) model (`fit_7`). This model excludes indicators Im8 and Im9 (originally associated with France).
 
-**Individual Item Reliability (IIR):**
+**Individual Item Reliability (IIR):** 
+This measures how much of the variance in each observed variable is explained by its latent factor.
 
-*   **High Values (Good):** Items showing strong reliability (typically > 0.70), indicating they are well-explained by their respective factors, include: Im7 (0.91), Im15 (0.71), Im3 (0.88), Im4 (0.94), Im12 (0.76), Im13 (0.73), Im20 (0.72), Im22 (0.77), Im17 (0.95), Im18 (0.73), Im10 (0.85), Im14 (0.91).
-*   **Moderate Values:** Im6 (0.66), Im5 (0.58), Im21 (0.61) show moderate/adequate reliability.
-*   **Low Values (Problematic):** A significant number of items exhibit low reliability, suggesting they are not strongly representative of their assigned factors in this model configuration:
-    *   Items within the **Assortment** factor: `Im1` (0.31), `Im2` (0.27), `Im16` (0.34), `Im19` (0.38). These items have very substantial variance unexplained by the Assortment factor.
-    *   Item `Im11` (0.38) for the **Quality** factor also shows low reliability.
+	• > 0.70 = Good : Im7,Im1, Im2, Im3, Im4, Im12, Im13, Im20, Im22, Im17, Im18, Im10, Im14
+	• 0.40–0.70 = Acceptable: Im15, Im5, Im21
+	• < 0.40 = Weak/problematic: Im16, Im19, Im11
     
 
-**Composite Reliability (CR)**
+**Composite Reliability (CR)** 
+Similar to Cronbach’s Alpha — it reflects internal consistency of a latent construct.
 
-*   **Acceptable/Marginal:**
-    *   **Assortment (0.75):** This value *barely* meets the minimum threshold. However, given the extremely low IIR for four out of its five indicators (Im1, Im2, Im16, Im19), this CR value is highly misleading and does not reflect genuine high internal consistency for this set of items as indicators of *this specific factor*.
-*   **Good/Excellent:**
-    *   **France (0.88), Aesthetic (0.92), Quality (0.83), Atmosphere (0.87), Trends (0.91), Food (0.94):** These factors demonstrate good to excellent internal consistency.
-
+	•	> 0.70 = Acceptable: France, Assortment, Quality, Atmosphere
+	•	> 0.90 = Excellent: Aesthetic, Trends, Food
+	
+All constructs are internally consistent.
 
 **Average Variance Extracted (AVE)**
+This shows convergent validity — i.e., how much of the variance in indicators is explained by the latent factor.
 
-*   **FAIL:**
-    *   **Assortment (0.37):** Fails substantially to meet the 0.50 threshold. This indicates **poor convergent validity**. On average, the Assortment factor explains only 37% of the variance in its indicators; more variance is attributable to error/uniqueness.
-*   **PASS:**
-    *   **France (0.79), Aesthetic (0.80), Quality (0.62), Atmosphere (0.70), Trends (0.84), Food (0.88):** These factors meet or exceed the 0.50 criterion, demonstrating acceptable to excellent convergent validity.
-
+	•	> 0.50 = Acceptable: Assortment, Quality, Atmosphere
+	•	> 0.70 = Excellent: France, Aesthetic, Trends, Food
+	
+Strong convergent validity for all constructs.
 
 **Discriminant Validity (via Fornell-Larcker Criterion)**
+```{r, echo=FALSE}
+fornell_table <- data.frame(
+  Factor = c("France", "Assortment", "Aesthetic", "Quality", "Atmosphere", "Trends", "Food"),
+  AVE = c(0.786, 0.581, 0.799, 0.623, 0.699, 0.836, 0.880),
+  Max_Squared_Correlation = c(0.341, 0.342, 0.269, 0.322, 0.268, 0.322, 0.341),
+  Conclusion = c("✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass")
+)
 
-Discriminant validity assesses whether latent factors represent truly distinct concepts. Using the Fornell-Larcker criterion, the AVE of a factor should be greater than its squared correlation (shared variance) with any other factor.
-
-*   **Assortment (AVE=0.37):**
-    *   vs. Aesthetic: Squared correlation = 0.41. Since 0.41 > 0.37, this comparison **FAILS**.
-    *   vs. Quality: Squared correlation = 0.42. Since 0.42 > 0.37, this comparison **FAILS**.
-    *   vs. Trends: Squared correlation = 0.46. Since 0.46 > 0.37, this comparison **FAILS**.
-    The Assortment factor **lacks discriminant validity** against the Aesthetic, Quality, and Trends factors within this model. It shares more variance with these other factors than is captured, on average, by its own indicators.
-*   **Other Factors:** France (AVE=0.79), Aesthetic (AVE=0.80), Quality (AVE=0.62), Atmosphere (AVE=0.70), Trends (AVE=0.84), and Food (AVE=0.88) all demonstrate adequate discriminant validity based on this criterion, as their AVEs are greater than their squared correlations with all other factors.
+kable(fornell_table, caption = "Fornell–Larcker Discriminant Validity Results")
+```
 
 ------------------------------------------------------------------------
 
-**Conclusion on Modified 7-Factor Model (`fit_7_cov`) Reliability & Validity**
+**Conclusion on Modified 7-Factor Model (`fit_7`) Reliability & Validity**
 
-Despite achieving **excellent overall model fit statistics** (RMSEA=0.048, CFI=0.976, etc.) through the removal of Im8/Im9 and the addition of residual covariances (`Im1~~Im2`, `Im16~~Im19`), this detailed assessment reveals **critical flaws in measurement quality, particularly for the Assortment factor**:
+The evaluation of the 7-factor measurement model reveals persistent issues with both model fit and construct validity, ultimately suggesting that this structure is not optimal for capturing the underlying dimensions of the Galeries Lafayette brand image.
 
-1.  **Poor Item Reliability:** Four out of five indicators for Assortment (`Im1`, `Im2`, `Im16`, `Im19`) show very low reliability (IIR < 0.40). Item `Im11` also shows low reliability for Quality.
-2.  **Lack of Convergent Validity:** The Assortment factor fails significantly on convergent validity (AVE = 0.37).
-3.  **Lack of Discriminant Validity:** The Assortment factor is not sufficiently distinct from Aesthetic, Quality, and Trends.
-4.  **Reliance on Modifications:** The model's good fit relies on residual covariances, especially `Im16~~Im19`, which likely compensates for omitting a distinct "Professionalism" factor identified in 8-factor analyses.
+Although some fit indices (CFI = 0.92, TLI = 0.90) fall into the acceptable range, the RMSEA remains poor at 0.084, and the Chi-square test is significant, indicating a misfit between the model and the data. Given the large sample size, Chi-square significance is expected, but RMSEA and CFI/TLI confirm the model lacks robust support.
 
-Therefore, while the global fit indices are appealing, this specific model (`fit_7_cov`) suffers from severe measurement issues for the Assortment construct. It is **not recommended as the final model** due to the invalid and unreliable measurement of this factor. The **8-factor structure** appears necessary to adequately represent the distinct dimensions within the data, particularly regarding the items related to professionalism (Im16, Im19).
+From a measurement perspective, several items exhibit weak standardized loadings—notably Im11 (Quality = 0.61), Im16 and Im19 (both on Assortment ≈ 0.58–0.59)—suggesting poor alignment with their intended factors. The forced inclusion of Im16 and Im19 under the Assortment factor weakens the measurement structure and undermines internal consistency.
+
+Although removing problematic items like Im8 and Im9 improved some aspects of the France factor, it did not resolve core model deficiencies. The analysis indicates that Assortment remains a weakly measured construct when including Im16 and Im19.
+
+Introducing an eighth factor—Professionalism—to house Im16 and Im19 could provide better solution.
 
 ------------------------------------------------------------------------
 
@@ -735,10 +555,12 @@ sort(paf_8$communality)
 ```
 **Variance Explained:** Explains 74.8% of the variance, a modest increase (~3%) over the 7-factor solution.
 
-**Loadings:** The 8th factor (MR8) primarily captures Im16 (0.787) and Im19 (0.494, which is higher than before). This resolves the cross-loading issue for these two items seen in the 7-factor model by giving them their own dimension.
-* Im9 (French Fashion)  still show some minor cross-loadings or weak primary loadings similar to the 7-factor solution.
-* Im15 (Professional Selection of Brands) now shows loadings on MR5 (0.311), MR1 (0.467), and MR8 (0.363), making it look more complex/problematic in this solution.
-* Im8 (Expertise in French Traditional Cuisine) is complex and doesn't cleanly belong to a single factor. It seems related to both the "France" dimension and the "Food" dimension.
+**Loadings:** 
+
+	• The 8th factor (MR8) primarily captures Im16 (0.787) and Im19 (0.494, which is higher than before). This resolves the cross-loading issue for these two items seen in the 7-factor model by giving them their own dimension.
+	• Im9 (French Fashion)  still show some minor cross-loadings or weak primary loadings similar to the 7-factor solution.
+	• Im15 (Professional Selection of Brands) now shows loadings on MR5 (0.311), MR1 (0.467), and MR8 (0.363), making it look more complex/problematic in this solution.
+	• Im8 (Expertise in French Traditional Cuisine) is complex and doesn't cleanly belong to a single factor. It seems related to both the "France" dimension and the "Food" dimension.
 
 **Communalities:** Generally similar or slightly improved. Im11 (0.40) and Im9 (0.45) remain low. Im16 and Im19 have higher communalities now.
 
@@ -797,17 +619,9 @@ CronProfessionalism
 **RMSEA:** 0.044 - *excellent*
 
 **Latent Variables (Std.all):**
-* Im11 on C: 0.61 (Lowish).
+ Im11 on C: 0.61 (Lowish).
 	
 **Cronbach’s Alpha** Results are good or excellent. 
-
-------------------------------------------------------------------------
-
-
-```{r }
-modificationindices(fit_8) %>% filter(mi>20)
-```
-**No need to introduce new modifications for 8 Factors.**
 
 ------------------------------------------------------------------------
 
@@ -848,24 +662,24 @@ std_fit1$psi^2
 
 This section details the reliability and validity assessment for the refined 8-factor Confirmatory Factor Analysis (CFA) model (`fit_8`). This model includes the "Professionalism" factor (Im16, Im19) and excludes indicators Im8, Im9, and Im15 based on previous refinement steps. Indicator Im11 remains within the Quality factor.
 
+------------------------------------------------------------------------
 
 **Individual Item Reliability (IIR)**
 
-IIR represents the proportion of variance in each observed indicator explained by its corresponding latent factor (effectively the squared standardized loading).
+This measures how much of the variance in each observed variable is explained by its latent factor.
 
-*   **High Values (Good):** The majority of items show strong reliability (typically > 0.70), indicating they are well-explained by their respective factors: Im7 (0.91), Im1 (0.96), Im2 (0.81), Im3 (0.88), Im4 (0.94), Im12 (0.76), Im13 (0.73), Im20 (0.71), Im22 (0.77), Im17 (0.94), Im18 (0.73), Im10 (0.85), Im14 (0.91), Im19 (0.73).
-*   **Moderate Values:** Im6 (0.66), Im5 (0.58), Im21 (0.61), Im16 (0.59) show moderate to adequate reliability.
-*   **Low Values (Potentially Problematic):**
-    *   Item `Im11` (0.38) for the **Quality** factor remains the indicator with the lowest reliability, confirming it is the weakest link in the measurement model. 
+	• > 0.70 = Good : Im7,Im1, Im2, Im3, Im4, Im12, Im13, Im20, Im22, Im17, Im18, Im10, Im14, Im19
+	• 0.40–0.70 = Acceptable: Im6, Im5, Im21
+	• < 0.40 = Weak/problematic: Im11
 
+------------------------------------------------------------------------
 
 **Composite Reliability (CR)**
-
-CR assesses the internal consistency of the indicators for each latent construct. A value > 0.70 is generally considered acceptable.
 
 *   **Excellent:** **France (0.88), Assortment (0.94), Aesthetic (0.92), Quality (0.83), Atmosphere (0.87), Trends (0.91), Food (0.94)** all demonstrate excellent internal consistency. Their respective indicators work well together.
 *   **Acceptable:** **Professionalism (0.79)** shows acceptable internal consistency, meeting the threshold.
 
+------------------------------------------------------------------------
 
 **Average Variance Extracted (AVE)**
 
@@ -873,22 +687,25 @@ AVE measures the average amount of variance explained by the latent factor acros
 
 *   **PASS (Excellent):** **France (0.79), Assortment (0.88), Aesthetic (0.80), Quality (0.62), Atmosphere (0.70), Trends (0.84), Food (0.88), Professionalism (0.66).** All factors strongly exceed the 0.50 threshold, demonstrating good to excellent convergent validity. The latent factors explain, on average, a substantial majority of the variance in their indicators.
 
+------------------------------------------------------------------------
+
 **Discriminant Validity (via Fornell-Larcker Criterion)**
 
 Discriminant validity assesses whether latent factors represent truly distinct concepts. Using the Fornell-Larcker criterion, the AVE of a factor should be greater than its squared correlation (shared variance) with any other factor.
 
-*   **France (AVE=0.79):** Distinct (max R² vs Food ≈ 0.34).
-*   **Assortment (AVE=0.88):** Distinct (max R² vs Professionalism ≈ 0.36).
-*   **Aesthetic (AVE=0.80):** Distinct (max R² vs Professionalism ≈ 0.43).
-*   **Quality (AVE=0.62):** Distinct (max R² vs Trends ≈ 0.32).
-*   **Atmosphere (AVE=0.70):** Distinct (max R² vs Trends ≈ 0.27).
-*   **Trends (AVE=0.84):** Distinct (max R² vs Professionalism ≈ 0.36).
-*   **Food (AVE=0.88):** Distinct (max R² vs France ≈ 0.34).
-*   **Professionalism (AVE=0.66):** Distinct (max R² vs Aesthetic ≈ 0.43).
+```{r, echo=FALSE}
+fornell_table_8f <- data.frame(
+  Factor = c("France", "Assortment", "Aesthetic", "Quality", "Atmosphere", "Trends", "Food", "Professionalism"),
+  AVE = c(0.787, 0.884, 0.798, 0.623, 0.699, 0.836, 0.880, 0.660),
+  Max_Squared_Correlation = c(0.343, 0.356, 0.426, 0.321, 0.267, 0.361, 0.343, 0.426),
+  Conclusion = c("✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass", "✓ Pass")
+)
 
+kable(fornell_table_8f, caption = "Fornell–Larcker Discriminant Validity Results (8-Factor Model)")
+```
 **All factors demonstrate adequate discriminant validity** based on the Fornell-Larcker criterion in this model. The AVE for each factor is comfortably higher than its squared correlation with any other factor.
 
-
+------------------------------------------------------------------------
 
 **Conclusion on Refined 8-Factor Model (`fit_8`) Reliability & Validity**
 
@@ -900,6 +717,7 @@ This refined 8-factor model (`fit_8`) demonstrates **strong psychometric propert
 4.  **Good Internal Consistency:** All factors exhibit good to excellent composite reliability (CR > 0.70).
 5.  **Generally Good Item Reliability:** Most individual items reliably measure their intended factors. The primary exception is `Im11` within the Quality factor, which consistently shows lower reliability compared to other items.
 
+------------------------------------------------------------------------
 
 **Conclusion:** This model (`fit_8`) is a very strong candidate for the final model. The only remaining consideration is the relatively weak performance of `Im11`. Although the standardized loading for Im11 (≈ 0.615) is lower relative to other indicators in the final model, it remains statistically significant (p < 0.001). This loading indicates that Im11 still shares approximately 38% of its variance with the 'Quality' factor, representing a substantive, non-negligible contribution to the construct's measurement within this well-fitting model.
 
@@ -914,28 +732,19 @@ The objective of this analysis was to identify the most appropriate factor struc
 
 **Evaluation of 6-Factor Models**
 
-The initial 6-factor EFA revealed a problematic structure. Notably, it merged conceptually distinct items (e.g., related to France and Food) into single factors and exhibited numerous complex cross-loadings. The corresponding CFA confirmed this inadequacy with **extremely poor model fit**.
-
-Attempts were made to improve fit by adding residual covariances based on modification indices (resulting in model `fit_6_cor`). While this approach resulted in statistically acceptable *global fit* indices, a detailed examination revealed critical weaknesses in **local fit and measurement quality**:
-
-*   The crucial "France" and "Assortment" factors demonstrated **unacceptably low Average Variance Extracted (AVE < 0.50)**, indicating poor convergent validity.
-*   The "Assortment" factor also showed **poor discriminant validity** against several other factors.
-*   The reliance on potentially atheoretical residual covariances further weakened this solution.
-
-Consequently, the 6-factor structure, even with modifications, was deemed fundamentally flawed and **rejected**.
+The 6-factor EFA revealed a problematic structure. Notably, it merged conceptually distinct items (e.g., related to France and Food) into single factors and exhibited numerous complex cross-loadings. The corresponding CFA confirmed this inadequacy with **extremely poor model fit**.
+The 6-factor structure was **rejected**.
 
 ------------------------------------------------------------------------
 
 **Evaluation of 7-Factor Models**
 
-The initial 7-factor CFA structure, mapped directly from the EFA, also exhibited **poor overall model fit** (RMSEA ≈ 0.084, CFI/TLI ≈ 0.90), indicating inadequacy. Key issues included:
+The  7-factor CFA structure, mapped directly from the EFA, also exhibited **poor overall model fit** (RMSEA ≈ 0.084, CFI/TLI ≈ 0.90), indicating inadequacy. Key issues included:
 
 *   The cross-loading behaviour of `Im8`.
 *   The problematic assignment of `Im16` and `Im19` to the "Assortment" factor, where they loaded weakly.
 
-Adding residual covariances (Model `fit_7_cov`) substantially improved global fit indices to excellent levels (RMSEA ≈ 0.048, CFI ≈ 0.976). However, this model still suffered from **poor measurement quality for the "Assortment" factor (AVE = 0.37)** and relied on model modifications that likely masked the need for a distinct "Professionalism" factor.
-
-Therefore, while better than the 6-factor solutions, the 7-factor structure, even when modified, did not provide an optimal representation of the data and was **not selected as the final model**.
+While better than the 6-factor solutions, the 7-factor structure did not provide an optimal representation of the data and was **not selected as the final model**.
 
 ------------------------------------------------------------------------
 
@@ -950,6 +759,7 @@ Subsequent refinement involved removing items identified as problematic across a
 
 This iterative process led to the final recommended model (`fit_8`): an 8-factor structure with "Professionalism" as a distinct factor, and items `Im8`, `Im9`, and `Im15` removed. This model demonstrated **outstanding statistical fit** across all indices (RMSEA = 0.044, CFI = 0.982, TLI = 0.975, SRMR = 0.029), strongly indicating it aligns well with the observed data.
 
+------------------------------------------------------------------------
 
 **Measurement Quality of Recommended 8-Factor Model (`fit_8`)**
 
@@ -960,6 +770,7 @@ This model exhibited strong psychometric properties:
 *   **Discriminant Validity:** All factors demonstrated clear discriminant validity based on the Fornell-Larcker criterion (AVE > R² with other factors).
 *   **Item Reliability:** Most indicators showed strong individual reliability (high squared loadings). The only exception was `Im11` ("High-quality Cosmetics") loading on "Quality" (Std. loading ≈ 0.615), which showed moderate reliability.
 
+------------------------------------------------------------------------
 
 **Final Model Justification (`fit_8`)**
 
@@ -982,9 +793,9 @@ In conclusion, the final 8-factor model (`fit_8`), incorporating the "Profession
 ------------------------------------------------------------------------
 
 ```{r }
-# Define the full SEM model string
+# Define the full model
 
-sem_model <- '
+model <- '
   # Measurement Model (Loadings -  Validated)
   France =~ Im6 + Im7
   Assortment =~ Im1 + Im2 
@@ -998,7 +809,7 @@ sem_model <- '
   Satisfaction =~ SAT_1 + SAT_2 + SAT_3                    #added accordingly to the task
   AffectiveCommitment =~ COM_A1 + COM_A2 + COM_A3 + COM_A4
   RepurchaseIntention =~ C_REP1 + C_REP2 + C_REP3
-  CocreationIntention =~ C_CR1 + C_CR3 + C_CR4 # Assuming C_CR2 might be dropped
+  CocreationIntention =~ C_CR1 + C_CR3 + C_CR4
 
   # Structural Model (Regressions)
   # Predicting Mediators (SAT and AC) from Image Factors (Paths a)
@@ -1077,83 +888,110 @@ sem_model <- '
 '
 
 # Fit the  model 
-fit_sem <- cfa(sem_model, data = Data, missing = "ML")  
+fit <- cfa(model, data = Data, missing = "ML")  
 
-summary(fit_sem, fit.measures=TRUE,standardized=TRUE)
+summary(fit, fit.measures=TRUE,standardized=TRUE)
 ```
 ```{r }
-parameterestimates(fit_sem, boot.ci.type = "bca.simple", standardized = TRUE)%>% kable()
+parameterestimates(fit, boot.ci.type = "bca.simple", standardized = TRUE)%>% kable()
 ```
-```{r }
-semPaths(
-  fit_sem,
-  what = "std",          # Standardized coefficients
-  style = "lisrel",      
-  layout = "tree",       # Tree layout
-  rotation = 2,          # ← Rotate tree to vertical
-  sizeLat = 10,          # Bigger latent nodes
-  sizeMan = 0,           # Hide manifest variables
-  whatLabels = "std",    # Show standardized estimates
-  edge.label.cex = 1.2,  # Bigger label font
-  edge.color = "black",
-  curvePivot = TRUE,
-  residuals = FALSE,
-  intercepts = FALSE,
-  thresholds = FALSE,
-  nCharNodes = 0
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Construct the comparison table
+satisfaction_drivers <- c(0.115, 0.197, -0.152, -0.030, 0.074, 0.011, 0.074, 0.479)
+affective_drivers <- c(0.192, 0.114, -0.026, -0.115, 0.411, -0.019, 0.020, 0.129)
+
+comparison_table <- data.frame(
+  Factor = c("France", "Assortment", "Aesthetic", "Quality", "Atmosphere", "Trends", "Food", "Professionalism"),
+  Beta_Satisfaction = satisfaction_drivers,
+  Beta_AffectiveCommitment = affective_drivers
 )
+
+kable(comparison_table, caption = "Standardized Effects (β) of Image Dimensions on Satisfaction vs. Affective Commitment")
 ```
 
+
+## **Interpretation by Factor**
+
+*	**France**: Positively influences both Satisfaction (β = 0.115) and Affective Commitment (β = 0.192). Its emotional and cultural value seems to enhance both immediate satisfaction and deeper emotional loyalty.
+*	**Assortment**: Also positively influences both mediators, but more strongly Satisfaction (β = 0.197) than Affective Commitment (β = 0.114). This indicates its role is more functional and tied to customer utility than to brand attachment.
+*	**Aesthetic**: Has a significant negative impact on Satisfaction (β = -0.152), suggesting perhaps overly stylized design may reduce comfort or usability. It shows no notable effect on Affective Commitment (β = -0.026).
+*	**Quality**: Shows weak or no impact on Satisfaction (β = -0.030), but a negative marginal effect on Affective Commitment (β = -0.115). This could reflect that perceived quality alone doesn’t build emotional connection, and poor quality may even damage loyalty.
+*	**Atmosphere**: A key driver for Affective Commitment (β = 0.411), but only weakly impacts Satisfaction (β = 0.074). This indicates that store atmosphere plays a much stronger role in emotional attachment than in functional satisfaction.
+*	**Trends**: Very weak effects on both mediators (Satisfaction β = 0.011, AC β = -0.019), suggesting trendiness isn’t a central factor in shaping satisfaction or emotional connection.
+*	**Food**: Small, non-significant effects on both (Satisfaction β = 0.074, AC β = 0.020). It likely enhances the environment, but doesn’t drive either satisfaction or emotional loyalty directly.
+*	**Professionalism**: The strongest predictor of Satisfaction (β = 0.479), reflecting the value customers place on professional service. Its effect on Affective Commitment is smaller and not significant (β = 0.129), suggesting service quality builds satisfaction more than emotional loyalty.
+	
+
+The mechanisms driving **Satisfaction** and **Affective Commitment** are not identical:
+
+*	**Satisfaction** is primarily influenced by **Professionalism and Assortment**, reflecting a functional, service-quality-driven response.
+*	**Affective Commitment** is driven most strongly by **Atmosphere and France** — more experiential and emotional elements.
+
+Thus, while some overlap exists (e.g., France and Assortment affect both), each mediator is shaped by distinct dominant drivers, meaning they function via different psychological mechanisms.
+
+```{r, echo=FALSE}
+mediation_summary <- data.frame(
+  Mediator = c("Satisfaction", "Satisfaction", "Affective Commitment", "Affective Commitment"),
+  Outcome = c("Repurchase Intention", "Cocreation Intention", "Repurchase Intention", "Cocreation Intention"),
+  Beta = c(0.318, -0.190, 0.354, 0.377),
+  Significance = c("***", "**", "***", "***"),
+  Direction = c("Positive", "Negative", "Positive", "Positive")
+)
+
+kable(mediation_summary, caption = "Mediating Effects of Satisfaction and Affective Commitment on Behavioral Outcomes")
+```
+
+**Repurchase Intention:**
+
+**Both Satisfaction and Affective Commitment** significantly predict Repurchase Intention:
+
+	•	Satisfaction → RI: β = 0.318 (p < .001)
+	•	Affective Commitment → RI: β = 0.354 (p < .001)
+
+This means both mediate the relationship between store image perceptions and Repurchase Intention. Several significant indirect effects confirm this:
+
+	•	Professionalism → Satisfaction → RI: β = 0.152 (p < .001)
+	•	Atmosphere → Affective Commitment → RI: β = 0.145 (p < .001)
+	•	France → Affective Commitment → RI: β = 0.068 (p = .003)
+
+Satisfaction and Affective Commitment both mediate effects on Repurchase Intention. Professionalism acts mostly via Satisfaction, while France and Atmosphere act via Affective Commitment.
+
 ------------------------------------------------------------------------
 
-## Comparison of Drivers for Satisfaction and Affective Commitment
-The analysis investigates whether the same store image perceptions drive Satisfaction and Affective Commitment. The results indicate that while there is some overlap, the primary drivers for each construct differ significantly.
+**Cocreation Intention**
 
-### Key Findings:
+This is more nuanced:
 
-**Partial Overlap:** Both Satisfaction and Affective Commitment are significantly and positively influenced by perceptions related to France (β = 0.115 for SAT, β = 0.192 for AC) and Assortment (β = 0.197 for SAT, β = 0.114 for AC).
+	•	Affective Commitment → CI: β = 0.377 (p < .001)
+	•	Satisfaction → CI: β = -0.190 (p = .007)
 
-**Distinct Primary Drivers:**
-* The strongest positive predictor for Satisfaction is Professionalism (β = 0.479, p < 0.001). However, Professionalism does not have a significant direct effect on Affective Commitment (p = 0.129).
-* The strongest positive predictor for Affective Commitment is Atmosphere (β = 0.411, p < 0.001). Conversely, Atmosphere does not have a significant direct effect on Satisfaction (p = 0.170).
+So:
 
-**Differing Negative/Null Effects:**
-* Aesthetic perception has a significant negative impact on Satisfaction (β = -0.152, p = 0.011) but no significant effect on Affective Commitment (p = 0.659).
-* Quality perception has a marginally significant negative impact on Affective Commitment (β = -0.115, p = 0.058) but no significant effect on Satisfaction (p = 0.613).
+	•	Affective Commitment positively mediates effects on Cocreation Intention.
+	•	Satisfaction negatively mediates — meaning higher Satisfaction reduces Cocreation intent.
 
-### Conclusion:
-The mechanisms driving Satisfaction and Affective Commitment are not the same, although they share some common antecedents (France, Assortment). Satisfaction appears more strongly linked to the perceived Professionalism and negatively related to Aesthetics, while Affective Commitment is more strongly driven by the store's Atmosphere and potentially negatively related to Quality. This suggests these are distinct psychological responses influenced differently by various facets of the store image.
+Confirmed by indirect effects:
 
+	•	Atmosphere → Affective Commitment → CI: β = 0.155 (p < .001)
+	•	France → Affective Commitment → CI: β = 0.072 (p = .002)
+	•	Professionalism → Satisfaction → CI: β = –0.091 (p = .014)
+
+Only **Affective Commitment** is a positive mediator for **Cocreation Intention**. Satisfaction acts as a negative mediator, meaning that overly satisfied customers may not be interested in engaging further in cocreation activities.
+	
 ------------------------------------------------------------------------
 
-## Mediation Role of Satisfaction and Affective Commitment
-The analysis strongly supports the role of Satisfaction and Affective Commitment as mediators between store image perceptions and behavioral intentions.
+## Conclusion
 
-### Evidence for Mediation:
+The mechanisms driving **Satisfaction** and **Affective Commitment** are partially overlapping but fundamentally distinct. 
 
-**Non-Significant Direct Effects:** The direct paths specified from the eight store image dimensions to the final outcomes (Repurchase Intention paths c1-c8; Cocreation Intention paths c9-c16) were overwhelmingly non-significant. This indicates that store image perceptions do not directly translate into these specific behavioral intentions in this model.
+While both are influenced by certain store image dimensions such as **France and Assortment**, **Satisfaction** is primarily driven by **Professionalism** (β = 0.479, p < .001) and negatively impacted by **Aesthetic** perception, indicating a focus on cognitive, evaluative judgments. 
 
-**Significant Indirect Effects:** As detailed in the parameterEstimates output under defined parameters (:=), numerous significant indirect effects were found. For example:
-* Professionalism -> Satisfaction -> Repurchase Intention (β = 0.152, p < 0.001)
-* Atmosphere -> Affective Commitment -> Repurchase Intention (β = 0.145, p < 0.001)
-* Atmosphere -> Affective Commitment -> Cocreation Intention (β = 0.155, p < 0.001)
-* Significant Mediator-Outcome Paths: The paths from the mediators to the outcomes were significant:
-* Satisfaction -> Repurchase Intention (β = 0.318, p < 0.001)
-* Affective Commitment -> Repurchase Intention (β = 0.354, p < 0.001)
-* Affective Commitment -> Cocreation Intention (β = 0.377, p < 0.001)
-* Satisfaction -> Cocreation Intention (β = -0.190, p = 0.007)
+In contrast, **Affective Commitment** is more strongly influenced by **Atmosphere** (β = 0.411, p < .001), reflecting an emotional attachment. 
 
-**Outcomes Mediated:**
-Based on this evidence, Satisfaction and Affective Commitment mediate the impact of store image perceptions on both modeled outcomes:
-
-**Repurchase Intention:** The influence of store image dimensions like Professionalism, Assortment, France, and Atmosphere on the intention to repurchase is channeled through Satisfaction and/or Affective Commitment.
-
-**Cocreation Intention:** The influence of store image dimensions (particularly Atmosphere and France via Affective Commitment, and Professionalism/Assortment via Satisfaction, albeit negatively in the latter case) on the intention to co-create is channeled through Affective Commitment and Satisfaction.
-
-### Conclusion:
-The model strongly supports the hypothesis that Satisfaction and Affective Commitment act as crucial intermediate mechanisms, translating perceptions of the store's image into subsequent behavioral intentions like Repurchase Intention and Cocreation Intention. The direct impact of image perceptions on these intentions appears minimal once the mediating variables are accounted for.
-
-
+Both mediators significantly transmit the effects of image perceptions to customer behaviors: **Satisfaction and Affective Commitment** mediate **Repurchase Intention** while **Affective Commitment** also mediates **Cocreation Intention** positively. Interestingly, **Satisfaction negatively** mediates the effect of some image dimensions on **Cocreation** indicating potential trade-offs between customer contentment and active engagement. Thus, both mediators play crucial—but distinct—roles in linking store perceptions to customer outcomes.
 
 ------------------------------------------------------------------------
 
@@ -1163,7 +1001,7 @@ The model strongly supports the hypothesis that Satisfaction and Affective Commi
 
 
 
-## Drivers of Repurchase Intention (RI)
+## Drivers of Repurchase Intention 
 
 ### Ranking of Total Effects on Repurchase Intention
 
@@ -1182,6 +1020,7 @@ The model strongly supports the hypothesis that Satisfaction and Affective Commi
 
 Atmosphere has a statistically significant positive total effect on Repurchase Intention, mainly driven by its indirect path through Affective Commitment (Atmosphere → AC → RI with β = 0.145). Professionalism has the second-highest impact but is not statistically significant (p = 0.118). Other image dimensions, although influential to mediators, do not show significant total effects on Repurchase Intention.
 
+------------------------------------------------------------------------
 
 ## Drivers of Cocreation Intention (CI)
 
@@ -1202,9 +1041,14 @@ Atmosphere has a statistically significant positive total effect on Repurchase I
 
 Atmosphere again emerges as the only significant dimension positively affecting Cocreation Intention, mainly via Affective Commitment (Atmosphere → AC → CI with β = 0.155). Professionalism's overall impact is negative but not significant due to conflicting pathways (positive via Affective Commitment but negative via Satisfaction).
 
+------------------------------------------------------------------------
 
 ## Overall Conclusion
 
-When examining the total effects, **Atmosphere** emerges as the sole significant driving force among the measured image dimensions for both Repurchase Intention and Cocreation Intention in this model. Its strong positive impact on Affective Commitment appears crucial for driving both outcomes.
+Among the store image dimensions, **Atmosphere** is the strongest and only statistically significant driver of **both Repurchase Intention (β_total = 0.254, p < .001) and Cocreation Intention (β_total = 0.256, p < .001)**, largely due to its strong positive indirect effects via **Affective Commitment**. 
 
-While other dimensions like Professionalism and Assortment significantly influence the mediators (Satisfaction and Affective Commitment), their overall combined impact on the final behavioral intentions is not statistically significant. This underscores the importance of the mediating pathways and highlights how different image dimensions contribute distinctly to intermediate psychological states (Satisfaction vs. Affective Commitment) rather than having uniform overall effects on behavior. The counterintuitive negative path from Satisfaction to Cocreation Intention also complicates the total effects for Cocreation Intention, particularly for dimensions strongly linked to Satisfaction (like Professionalism).
+For **Repurchase Intention**, **Atmosphere** is followed by **Professionalism** (β_total = 0.141), Food (β = 0.082), and **Assortment** (β = 0.067), though none of these are statistically significant. The remaining dimensions (France, Quality, Aesthetic, and Trends) show negligible or negative effects. 
+
+For **Cocreation Intention**, **Atmosphere** is again dominant, with **Professionalism** showing a negative but non-significant total effect (β = –0.140), likely due to the negative mediation via **Satisfaction**. All other dimensions—including Quality, Food, France, Trends, Aesthetic, and Assortment—have minimal and non-significant total effects. 
+
+**These findings highlight that Atmosphere is the only reliable and consistent predictor of both behavioral outcomes, underscoring its importance in shaping emotional connection and future customer actions.**
